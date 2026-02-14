@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WK 2026">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%230A7AFF'/><stop offset='100%25' style='stop-color:%2334C759'/></linearGradient></defs><rect width='180' height='180' fill='url(%23grad)'/><circle cx='90' cy='90' r='70' fill='white'/><circle cx='90' cy='90' r='60' fill='none' stroke='black' stroke-width='3'/><path d='M90 30 L105 60 L90 70 L75 60 Z' fill='black'/><path d='M60 75 L75 60 L70 90 L45 90 Z' fill='black'/><path d='M120 75 L105 60 L110 90 L135 90 Z' fill='black'/><path d='M60 105 L45 90 L70 90 L75 120 Z' fill='black'/><path d='M120 105 L135 90 L110 90 L105 120 Z' fill='black'/><path d='M90 150 L75 120 L90 110 L105 120 Z' fill='black'/></svg>">
+    
+    <title>WK 2026 ⚽</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        
+        #app {
+            height: 100vh;
+            height: -webkit-fill-available;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .status-bar {
+            height: 54px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 15px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-time { flex: 1; }
+        
+        .status-notch {
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .status-icons {
+            flex: 1;
+            text-align: right;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .hero-header {
+            background: linear-gradient(165deg, #0A7AFF 0%, #FF375F 45%, #34C759 100%);
+            padding: 40px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -100px;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        
+        .flags-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            font-size: 48px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .trophy {
+            font-size: 56px;
+            animation: bounce 2.5s cubic-bezier(0.36, 0, 0.66, -0.56) infinite;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(-5deg); }
+            75% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .hero-title {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-subtitle {
+            text-align: center;
+            font-size: 17px;
+            font-weight: 500;
+            opacity: 0.95;
+            letter-spacing: 0.2px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .install-banner {
+            background: linear-gradient(135deg, #FF9500 0%, #FF375F 100%);
+            margin: 16px;
+            padding: 20px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(255, 149, 0, 0.3);
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .install-banner.hidden {
+            display: none;
+        }
+        
+        .install-banner h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .install-banner p {
+            font-size: 14px;
+            margin-bottom: 12px;
+            opacity: 0.95;
+        }
+        
+        .install-steps {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            text-align: left;
+        }
+        
+        .install-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .install-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: white;
+            color: #FF375F;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .close-banner {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .content-area {
+            padding-bottom: 100px;
+            background: #000;
+        }
+        
+        .tab-content {
+            padding: 0 16px;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .ios-card {
+            background: rgba(28, 28, 30, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .countdown-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.3px;
+        }
+        
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .countdown-item {
+            background: linear-gradient(135deg, #0A7AFF 0%, #0055CC 100%);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(10, 122, 255, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+        }
+        
+        .countdown-number {
+            font-size: 36px;
+            font-weight: 700;
+            display: block;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .countdown-label {
+            font-size: 11px;
+            opacity: 0.9;
+            display: block;
+            margin-top: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .fact-card {
+            background: rgba(28, 28, 30, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            padding: 24px 16px;
+            text-align: center;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .fact-card:active {
+            transform: scale(0.96);
+        }
+        
+        .fact-icon {
+            font-size: 44px;
+            margin-bottom: 12px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        
+        .fact-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0A7AFF;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+        
+        .fact-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 24px 0 20px;
+            letter-spacing: -0.5px;
+            padding-left: 8px;
+        }
+        
+        .venue-card {
+            background: rgba(28, 28, 30, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .venue-card:active {
+            transform: scale(0.98);
+        }
+        
+        .venue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .venue-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .venue-flag {
+            font-size: 40px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        
+        .venue-city {
+            font-weight: 700;
+            font-size: 19px;
+            margin-bottom: 4px;
+            letter-spacing: -0.2px;
+        }
+        
+        .venue-stadium {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .venue-capacity {
+            text-align: right;
+        }
+        
+        .capacity-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .capacity-number {
+            font-weight: 700;
+            color: #0A7AFF;
+            font-size: 18px;
+            letter-spacing: -0.3px;
+        }
+        
+        .info-banner {
+            background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+            border-radius: 18px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(52, 199, 89, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+        }
+        
+        .info-banner h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+        }
+        
+        .info-banner p {
+            font-size: 15px;
+            opacity: 0.95;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .team-card {
+            background: rgba(28, 28, 30, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .team-card:active {
+            transform: scale(0.96);
+        }
+        
+        .team-check {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .team-flag {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+        }
+        
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(28, 28, 30, 0.98);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .tab-button {
+            flex: 1;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            padding: 8px;
+            border-radius: 12px;
+            position: relative;
+        }
+        
+        .tab-button:active {
+            transform: scale(0.9);
+        }
+        
+        .tab-button.active {
+            color: #0A7AFF;
+        }
+        
+        .tab-button.active::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: #0A7AFF;
+            border-radius: 2px;
+        }
+        
+        .tab-icon {
+            font-size: 26px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .tab-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-time" id="status-time">9:41</div>
+            <div class="status-notch"></div>
+            <div class="status-icons">
+                <span>📶</span>
+                <span>📡</span>
+                <span>🔋</span>
+            </div>
+        </div>
+
+        <!-- Hero Header -->
+        <div class="hero-header">
+            <div class="hero-glow"></div>
+            <div class="flags-row">
+                <span>🇺🇸</span>
+                <span class="trophy">🏆</span>
+                <span>🇨🇦</span>
+                <span class="trophy">🏆</span>
+                <span>🇲🇽</span>
+            </div>
+            <h1 class="hero-title">FIFA World Cup 2026</h1>
+            <p class="hero-subtitle">11 juni – 19 juli 2026</p>
+        </div>
+
+        <!-- Install Banner for iOS -->
+        <div class="install-banner" id="install-banner">
+            <button class="close-banner" onclick="closeInstallBanner()">×</button>
+            <h3>📱 Installeer op je iPhone</h3>
+            <p>Gebruik de app volledig scherm zonder Safari!</p>
+            <div class="install-steps">
+                <div class="install-step">
+                    <span class="step-number">1</span>
+                    <span>Tap op het deel-icoon <strong>⬆️</strong> onderaan</span>
+                </div>
+                <div class="install-step">
+                    <span class="step-number">2</span>
+                    <span>Kies <strong>"Zet op beginscherm"</strong></span>
+                </div>
+                <div class="install-step">
+                    <span class="step-number">3</span>
+                    <span>Tap <strong>"Voeg toe"</strong> rechtsboven</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Home Tab -->
+            <div id="home-tab" class="tab-content active">
+                <div class="ios-card">
+                    <div class="countdown-title">⏰ Start Over</div>
+                    <div class="countdown-grid">
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="days">0</span>
+                            <span class="countdown-label">Dagen</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="hours">0</span>
+                            <span class="countdown-label">Uren</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="minutes">0</span>
+                            <span class="countdown-label">Min</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="seconds">0</span>
+                            <span class="countdown-label">Sec</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="facts-grid">
+                    <div class="fact-card">
+                        <span class="fact-icon">🌎</span>
+                        <div class="fact-title">48 Teams</div>
+                        <div class="fact-desc">Eerste WK met 48 landen</div>
+                    </div>
+                    <div class="fact-card">
+                        <span class="fact-icon">⚽</span>
+                        <div class="fact-title">104 Wedstrijden</div>
+                        <div class="fact-desc">Meer dan ooit tevoren</div>
+                    </div>
+                    <div class="fact-card">
+                        <span class="fact-icon">🏟️</span>
+                        <div class="fact-title">16 Stadions</div>
+                        <div class="fact-desc">Over 3 landen</div>
+                    </div>
+                    <div class="fact-card">
+                        <span class="fact-icon">🏆</span>
+                        <div class="fact-title">3 Gastlanden</div>
+                        <div class="fact-desc">USA, Canada & Mexico</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matches Tab -->
+            <div id="matches-tab" class="tab-content">
+                <h2 class="section-title">⚽ Wedstrijden</h2>
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <div class="empty-title">Nog Geen Wedstrijden</div>
+                    <div class="empty-desc">Het wedstrijdschema wordt bekend gemaakt na de loting in 2025</div>
+                </div>
+            </div>
+
+            <!-- Standings Tab -->
+            <div id="standings-tab" class="tab-content">
+                <h2 class="section-title">📊 Standen</h2>
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <div class="empty-title">Nog Geen Standen</div>
+                    <div class="empty-desc">Standen worden bijgewerkt zodra het toernooi begint</div>
+                </div>
+            </div>
+
+            <!-- Venues Tab -->
+            <div id="venues-tab" class="tab-content">
+                <h2 class="section-title">🏟️ Stadions</h2>
+                <div id="venues-list"></div>
+            </div>
+
+            <!-- Teams Tab -->
+            <div id="teams-tab" class="tab-content">
+                <div class="info-banner">
+                    <h2>✅ Gekwalificeerd</h2>
+                    <p>15 van 48 teams (tot nu toe)</p>
+                </div>
+                <div id="teams-list" class="team-grid"></div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <nav class="tab-bar">
+            <button class="tab-button active" onclick="showTab('home')">
+                <span class="tab-icon">🏆</span>
+                <span class="tab-label">Home</span>
+            </button>
+            <button class="tab-button" onclick="showTab('matches')">
+                <span class="tab-icon">⚽</span>
+                <span class="tab-label">Wedstrijden</span>
+            </button>
+            <button class="tab-button" onclick="showTab('standings')">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">Standen</span>
+            </button>
+            <button class="tab-button" onclick="showTab('venues')">
+                <span class="tab-icon">🏟️</span>
+                <span class="tab-label">Stadions</span>
+            </button>
+            <button class="tab-button" onclick="showTab('teams')">
+                <span class="tab-icon">🏴</span>
+                <span class="tab-label">Teams</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // Data
+        const venues = [
+            { city: 'Mexico City', stadium: 'Estadio Azteca', flag: '🇲🇽', capacity: '87.523' },
+            { city: 'Guadalajara', stadium: 'Estadio Akron', flag: '🇲🇽', capacity: '46.232' },
+            { city: 'Monterrey', stadium: 'Estadio BBVA', flag: '🇲🇽', capacity: '53.500' },
+            { city: 'New York/New Jersey', stadium: 'MetLife Stadium', flag: '🇺🇸', capacity: '82.500' },
+            { city: 'Los Angeles', stadium: 'SoFi Stadium', flag: '🇺🇸', capacity: '70.240' },
+            { city: 'Dallas', stadium: 'AT&T Stadium', flag: '🇺🇸', capacity: '80.000' },
+            { city: 'Atlanta', stadium: 'Mercedes-Benz Stadium', flag: '🇺🇸', capacity: '71.000' },
+            { city: 'Houston', stadium: 'NRG Stadium', flag: '🇺🇸', capacity: '72.220' },
+            { city: 'Kansas City', stadium: 'Arrowhead Stadium', flag: '🇺🇸', capacity: '76.416' },
+            { city: 'Miami', stadium: 'Hard Rock Stadium', flag: '🇺🇸', capacity: '65.326' },
+            { city: 'Philadelphia', stadium: 'Lincoln Financial Field', flag: '🇺🇸', capacity: '69.796' },
+            { city: 'Seattle', stadium: 'Lumen Field', flag: '🇺🇸', capacity: '69.000' },
+            { city: 'San Francisco Bay Area', stadium: 'Levi\'s Stadium', flag: '🇺🇸', capacity: '68.500' },
+            { city: 'Boston', stadium: 'Gillette Stadium', flag: '🇺🇸', capacity: '65.878' },
+            { city: 'Toronto', stadium: 'BMO Field', flag: '🇨🇦', capacity: '45.500' },
+            { city: 'Vancouver', stadium: 'BC Place', flag: '🇨🇦', capacity: '54.500' },
+        ];
+
+        const teams = [
+            { name: 'Argentinië', flag: '🇦🇷' },
+            { name: 'Brazilië', flag: '🇧🇷' },
+            { name: 'Canada', flag: '🇨🇦' },
+            { name: 'Duitsland', flag: '🇩🇪' },
+            { name: 'Engeland', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+            { name: 'Frankrijk', flag: '🇫🇷' },
+            { name: 'Italië', flag: '🇮🇹' },
+            { name: 'Japan', flag: '🇯🇵' },
+            { name: 'Mexico', flag: '🇲🇽' },
+            { name: 'Marokko', flag: '🇲🇦' },
+            { name: 'Nederland', flag: '🇳🇱' },
+            { name: 'Portugal', flag: '🇵🇹' },
+            { name: 'Spanje', flag: '🇪🇸' },
+            { name: 'USA', flag: '🇺🇸' },
+            { name: 'Uruguay', flag: '🇺🇾' },
+        ];
+
+        // Render venues
+        const venuesList = document.getElementById('venues-list');
+        venues.forEach(venue => {
+            venuesList.innerHTML += `
+                <div class="venue-card">
+                    <div class="venue-header">
+                        <div class="venue-info">
+                            <span class="venue-flag">${venue.flag}</span>
+                            <div>
+                                <div class="venue-city">${venue.city}</div>
+                                <div class="venue-stadium">${venue.stadium}</div>
+                            </div>
+                        </div>
+                        <div class="venue-capacity">
+                            <div class="capacity-label">Capaciteit</div>
+                            <div class="capacity-number">${venue.capacity}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Render teams
+        const teamsList = document.getElementById('teams-list');
+        teams.forEach(team => {
+            teamsList.innerHTML += `
+                <div class="team-card">
+                    <div class="team-check">✓</div>
+                    <div>
+                        <span class="team-flag">${team.flag}</span>
+                        <div class="team-name">${team.name}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Countdown Timer
+        function updateCountdown() {
+            const wkDate = new Date('2026-06-11T00:00:00').getTime();
+            const now = new Date().getTime();
+            const difference = wkDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = days;
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Update status bar time
+        function updateStatusTime() {
+            const now = new Date();
+            document.getElementById('status-time').textContent = 
+                now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+        }
+        updateStatusTime();
+        setInterval(updateStatusTime, 60000);
+
+        // Tab Navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Set active button
+            event.currentTarget.classList.add('active');
+        }
+
+        // Install banner handling
+        function closeInstallBanner() {
+            document.getElementById('install-banner').classList.add('hidden');
+            localStorage.setItem('installBannerClosed', 'true');
+        }
+
+        // Check if already installed or banner closed
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true ||
+            localStorage.getItem('installBannerClosed')) {
+            document.getElementById('install-banner').classList.add('hidden');
+        }
+
+        // Save data to localStorage for offline access
+        function saveData() {
+            localStorage.setItem('wk2026-venues', JSON.stringify(venues));
+            localStorage.setItem('wk2026-teams', JSON.stringify(teams));
+        }
+        saveData();
+
+        // Prevent scroll bounce on iOS
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.tab-content, #app')) {
+                return;
+            }
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
